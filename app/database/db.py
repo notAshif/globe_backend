@@ -13,7 +13,6 @@ def init_db(app):
     elif db_url.startswith("postgresql://"):
         db_url = db_url.replace("postgresql://", "postgresql+pg8000://", 1)
         
-    # pg8000 doesn't support channel_binding or sslmode, remove them
     if "channel_binding" in db_url:
         import re
         db_url = re.sub(r'[&?]channel_binding=[^&]*', '', db_url)

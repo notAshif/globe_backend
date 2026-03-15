@@ -1,17 +1,37 @@
 import requests
+from config.config import config
 
 def get_flight():
-    url = "https://opensky-network.org/api/states/all"
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
+    api_key = config.FLIGHT_API_KEY
+    url = f"https://airlabs.co/api/v9/flights?api_key={api_key}"
+    
     try:
-        # OpenSky is often slow, 15s timeout
-        res = requests.get(url, headers=headers, timeout=15)
+        res = requests.get(url, timeout=10)
         res.raise_for_status()
-        return res.json()
+        data = res.json()
+        
+        if "response" in data:
+            mapped_states = []
+            for flight in data.get("response", []):
+                if flight.get("lat") and flight.get("lng"):
+                    state = [
+                        flight.get("hex", "N/A"),
+                        flight.get("flight_icao", "N/A"),
+                        flight.get("flag", "Unknown"),
+                        None, None,
+                        flight.get("lng"),
+                        flight.get("lat"),
+                        flight.get("alt", 0),
+                        None,
+                        flight.get("speed", 0) / 3.6,
+                        flight.get("dir", 0)
+                    ]
+                    mapped_states.append(state)
+            
+            return {"states": mapped_states}
+        
+        return {"states": []}
+        
     except Exception as e:
-        import traceback
-        print(f"FAILED TO FETCH FLIGHTS: {type(e).__name__}: {e}")
-        traceback.print_exc()
+        print(f"AirLabs API Error: {e}")
         return {"states": []}
