@@ -1,0 +1,10 @@
+flask
+flask-cors
+flask-sqlalchemy
+flask-migrate
+pg8000
+python-dotenv
+gunicorn
+requests
+requests-oauthlib
+PyJWT
