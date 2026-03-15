@@ -24,6 +24,10 @@ app.register_blueprint(news_bp)
 app.register_blueprint(share_bp)
 app.register_blueprint(secret_bp)
 
+@app.route('/')
+def index():
+    return {"status": "ok", "message": "Backend is running!"}
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
